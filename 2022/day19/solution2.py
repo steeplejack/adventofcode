@@ -157,8 +157,9 @@ def greedy_lower_bound(blueprint, generations):
     s = 0
     for _ in range(100):
         f = greedy_search(blueprint, generations)
-        s += f.geode
-    return s // 100
+        if f.geode > s:
+            s = f.geode
+    return s
 
 
 
