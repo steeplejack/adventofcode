@@ -138,7 +138,31 @@ def project_score(params, max_time):
     s = max_time - params[0]
     return trnum(s + params.geode_robot - 1) - trnum(params.geode_robot - 1) + params.geode
 
-def max_score(blueprint, max_time, min_projected = 0):
+import random
+
+def greedy_search(blueprint, generations):
+    factory = new()
+    for _ in range(generations):
+        moves = available_moves(blueprint, factory)
+        if Moves.GEODE in moves:
+            factory = build_geode_robot(blueprint, factory)
+        elif Moves.OBSIDIAN in moves:
+            factory = build_obsidian_robot(blueprint, factory)
+        else:
+            move = random.choice(moves)
+            factory = apply_move(blueprint, factory, move)
+    return factory
+
+def greedy_lower_bound(blueprint, generations):
+    s = 0
+    for _ in range(100):
+        f = greedy_search(blueprint, generations)
+        s += f.geode
+    return s // 100
+
+
+
+def max_score(blueprint, max_time, lower_bound = 0, heuristic = False):
     factory = new()
     apply_move(blueprint, factory, Moves.WAIT)
     q = deque()
@@ -158,28 +182,32 @@ def max_score(blueprint, max_time, min_projected = 0):
             max_score = score
         
         if i % 50000 == 0:
-            print(f'BEST={max_score} BBs={branch_and_bounds} MEMO={collisions} Q={len(q)} TIME={f.time}')
+            print(f'LB={lower_bound} BEST={max_score} BBs={branch_and_bounds} MEMO={collisions} Q={len(q)} TIME={f.time}')
         
         if f.time < max_time:
             moves = available_moves(blueprint, f)
+            if heuristic:
+                if Moves.GEODE in moves:
+                    moves = [Moves.GEODE]
+                elif Moves.OBSIDIAN in moves:
+                    moves = [Moves.OBSIDIAN]
             for move in moves:
                 new_f = apply_move(blueprint, f, move)
                 
                 best_possible = project_score(new_f, max_time)
-                if best_possible <= max_score:
+                if best_possible <= max_score or best_possible < lower_bound:
                     branch_and_bounds += 1
                 
                 been_seen = new_f in seen
                 if been_seen:
                     collisions += 1
                 
-                if not been_seen and best_possible > max_score and best_possible >= min_projected:
+                if not been_seen and best_possible > max_score and best_possible >= lower_bound:
                     q.append(new_f)
                     seen.add(new_f)
         
         if f.time > time_step and f.time > 9:
             time_step = f.time
-            print(f"Clearing cache at time step {time_step - 1}")
             sz = len(seen)
             to_remove = set()
             for params in seen:
@@ -189,7 +217,6 @@ def max_score(blueprint, max_time, min_projected = 0):
             seen -= to_remove
             assert len(seen) == sz - rm
             assert rm > 0
-            print(f"Reduced memo from {sz} to {sz-rm}")
             
     return max_score
 
@@ -293,12 +320,23 @@ if __name__ == "__main__":
     part2 = True
 
     if part2: # 49 18
+        # I was stuck on this and checked the solutions thread on reddit for ideas. One thing I added from there
+        # is to never build more robots producing a resource than I can spend of that resource in one turn - 
+        # don't have 5 obsidian robots if the maximum obsidian cost is 4. This helps, but was still not enough
+        # to make the problem solvable.
+        # The best idea I had (the only thing that made the problem tractable without blowing all my memory)
+        # is to set an expectation of the lower bound of the score before doing the tree search, and prune any
+        # branches that can't achieve this score. I use a greedy semi-randomised initial search to get a rough
+        # lower bound, followed by a tree search with a heuristic to heavily prune the tree (always build a geode
+        # robot if available; always build an obsidian robot if it's the best available). With a decently high
+        # lower bound the exact search is easy, even without using the rule I got from reddit.
         if len(blueprints) > 3:
-            blueprints = blueprints
+            blueprints = blueprints[:3]
         scores = []
-        mins = [40, 15, 12] # Aggressive pruning - any branch that can't get a score above these values is removed from the search
-        for blueprint, min_proj in zip(blueprints, mins):
-            score = max_score(blueprint, 32, min_proj)
+        for blueprint in blueprints:
+            lower_bound = greedy_lower_bound(blueprint, 32)
+            lower_bound = max_score(blueprint, 32, lower_bound, heuristic = True)
+            score = max_score(blueprint, 32, lower_bound, heuristic = False)
             scores.append(score)
             print(score)
             print(scores)
@@ -312,7 +350,9 @@ if __name__ == "__main__":
     else:
         scores = []
         for blueprint in blueprints:
-            score = max_score(blueprint, 24)
+            lower_bound = greedy_lower_bound(blueprint, 24)
+            lower_bound = max_score(blueprint, 24, lower_bound, heuristic = True)
+            score = max_score(blueprint, 24, lower_bound, heuristic = False)
             scores.append(score)
             print(score)
             print(scores)
