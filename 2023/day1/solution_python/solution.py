@@ -8,44 +8,27 @@ def parse_args():
     return parser.parse_args()
 
 
-# Aho_Corasick algorithm
+# Aho_Corasick algorithm, which I cribbed from something called
+# 'prepbytes.com'
 class TrieNode:
-    def __init__(self, id = '-1'):
+    def __init__(self):
         self.children = {}
         self.end = False
         self.word = ''
         self.link = None
-        self.id = id
-    def __str__(self):
-        link_id = self.link.id if self.link else 'None'
-        return f'TrieNode(id=[{self.id}],childkeys={sorted(self.children.keys())},word={self.word},end={self.end},link={link_id})'
-
 
 def build_trie(patterns):
-    root = TrieNode('root')
+    root = TrieNode()
     for pattern in patterns:
         node = root
         for char in pattern:
-            index = ord(char)
-            if not index in node.children:
-                node.children[index] = TrieNode(f'{char},{pattern}')
-            node = node.children[index]
+            if not char in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
         node.end = True
         node.word = pattern
 
-    build_failure_links(root)
-    return root
-
-def print_trie(trie):
-    stack = [trie]
-    while len(stack) > 0:
-        node = stack.pop()
-        for child in node.children.values():
-            stack.append(child)
-        print(node)
-
-def build_failure_links(trie):
-    root = trie
+    # Build 'failure links'
     queue = []
     for child in root.children.values():
         queue.append(child)
@@ -61,25 +44,25 @@ def build_failure_links(trie):
                 link = link.link
 
             child.link = link.children.get(i) if link else root
+    return root
 
 def search(text, trie):
     root = trie
     node = root
     result = []
 
-    for i, char in enumerate(text):
-        index = ord(char)
-        while node and not node.children.get(index):
+    for char in text:
+        while node and not node.children.get(char):
             node = node.link
 
         if not node:
             node = root
             continue
         
-        node = node.children.get(index)
+        node = node.children.get(char)
 
         if node.end:
-            result.append((i - len(node.word) + 1, node.word))
+            result.append(node.word)
             
     return result
 
@@ -96,9 +79,8 @@ def calculate_result(infile, patterns):
     with open(infile) as fl:
         for line in fl:
             matches = search(line, trie)
-            first_match = min(matches, key=lambda x: x[0])[1]
-            last_match = max(matches, key=lambda x: x[0])[1]
-            assert first_match == matches[0][1] and last_match == matches[-1][1]
+            first_match = matches[0]
+            last_match = matches[-1]
             value = 10 * decode_match(first_match) + decode_match(last_match)
             sum += value
     return sum
