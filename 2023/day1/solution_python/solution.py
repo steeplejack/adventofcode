@@ -23,11 +23,7 @@ def build_trie(patterns):
         node = root
         for char in pattern:
             if not char in node.children:
-<<<<<<< Updated upstream
                 node.children[char] = TrieNode()
-=======
-                node.children[char] = TrieNode(f'{char},{pattern}')
->>>>>>> Stashed changes
             node = node.children[char]
         node.end = True
         node.word = pattern
@@ -55,11 +51,7 @@ def search(text, trie):
     node = root
     result = []
 
-<<<<<<< Updated upstream
     for char in text:
-=======
-    for i, char in enumerate(text):
->>>>>>> Stashed changes
         while node and not node.children.get(char):
             node = node.link
 
@@ -90,7 +82,6 @@ def calculate_result(infile, patterns):
             first_match = matches[0]
             last_match = matches[-1]
             value = 10 * decode_match(first_match) + decode_match(last_match)
-            print(f'{line.strip()} -> {value}')
             sum += value
     return sum
 
