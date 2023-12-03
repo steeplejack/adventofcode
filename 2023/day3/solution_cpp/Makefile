@@ -1,6 +1,6 @@
 .PHONY: clean
 
-build:
+build: CMakeLists.txt *.cpp *.h
 	cmake -B build -S .
 	cmake --build build/
 

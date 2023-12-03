@@ -23,3 +23,17 @@ int parse_number(std::string::iterator& it) {
     --it;
     return std::stoi(val);
 }
+
+bool Number::collides(Symbol* symbol) {
+    if (std::abs(row - symbol->row) > 1) {
+        return false;
+    }
+    if (symbol->col < start - 1 || symbol->col > end + 1) {
+        return false;
+    }
+
+    collisions.push_back(symbol);
+    symbol->collisions.push_back(this);
+
+    return true;
+}
