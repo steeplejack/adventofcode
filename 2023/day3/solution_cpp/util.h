@@ -1,10 +1,23 @@
 #pragma once
 #include <iostream>
 
-struct AoC {
-    int day{0};
-    int year{2023};
+struct Number {
+    int value{0};
+    int row{0};
+    int start{0};
+    int end{0};
 };
 
-std::ostream& operator<<(std::ostream& os, const AoC& aoc);
+std::ostream& operator<<(std::ostream& os, const Number& number);
 
+struct Symbol {
+    char value{0};
+    int row{0};
+    int col{0};
+};
+
+std::ostream& operator<<(std::ostream& os, const Symbol& symbol);
+
+bool is_digit(char ch);
+
+int parse_number(std::string::iterator& it);
