@@ -79,15 +79,6 @@ def process_infile(filename):
 
     return numbers, symbols
 
-def make_grid(input_filename):
-    grid = []
-    with open(input_filename) as fl:
-        for line in fl:
-            line = line.strip()
-            chars = list(line)
-            grid.append(line)
-    return grid
-
 def check_collisions(numbers, symbols):
     maxrow = max(max(numbers), max(symbols))
     for row in symbols:
@@ -97,44 +88,6 @@ def check_collisions(numbers, symbols):
                     continue
                 for number in numbers[rownum]:
                     number.collides(symbol)
-
-def get_uncollided_numbers(numbers):
-    out = []
-    for row in sorted(numbers):
-        for number in numbers[row]:
-            if number.ever_collides == False:
-                out.append(number)
-    return out
-
-def get_collided_numbers(numbers):
-    out = []
-    for row in sorted(numbers):
-        for number in numbers[row]:
-            if number.ever_collides == True:
-                out.append(number)
-    return out
-
-def print_grid_context(number, grid):
-    area = []
-    if number.ever_collides:
-        area.append("!COLLIDES!")
-    else:
-        area.append("!NO_COLLISION!")
-    width = number.end - number.start + 3
-    maxrow = len(grid)
-    maxcol = len(grid[0])
-
-    for r in [number.row - 1, number.row, number.row + 1]:
-        l = ''
-        for c in range(number.start - 1, number.end + 2):
-            if r < 0 or r >= maxrow or c < 0 or c >= maxcol:
-                char = ' '
-            else:
-                char = grid[r][c]
-            l += (char)
-        area.append(l)
-    return('\n'.join(area))
-
 def part1(numbers):
     sum = 0
     for row in numbers:
@@ -148,7 +101,7 @@ def part2(symbols):
     for row in symbols:
         for symbol in symbols[row]:
             prod = 1
-            if symbol.value == '*' and len(symbol.collisions) > 1:
+            if symbol.value == '*' and len(symbol.collisions) == 2:
                 for number in symbol.collisions:
                     prod *= number.value
                 sum += prod
