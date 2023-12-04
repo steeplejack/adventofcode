@@ -1,7 +1,7 @@
 .PHONY: clean
 
 build: CMakeLists.txt *.cpp *.h
-	cmake -B build -S .
+	cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 	cmake --build build/
 
 part1: build
