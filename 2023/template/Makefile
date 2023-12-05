@@ -1,14 +1,14 @@
 .PHONY: clean
 
-build:
+build: CMakeLists.txt *.cpp *.h
 	cmake -B build -S .
 	cmake --build build/
 
 part1: build
-	./build/part1 ../input.txt
+	@./build/part1 ../input.txt
 
 part2: build
-	./build/part2 ../input.txt
+	@./build/part2 ../input.txt
 
 run: part1 part2
 
