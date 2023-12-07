@@ -1,3 +1,4 @@
+import sys
 from collections import Counter
 
 hands = {
@@ -51,12 +52,54 @@ class Hand:
     def __hash__(self, other):
         return hash(self.total_rank)
 
+    def __contains__(self, c):
+        if len(c) != 1:
+            return False
+        return c in self.hand
 
-with open('../input.txt') as fl:
-    cards, bids = zip(*[line.strip().split() for line in fl])
-    cards = [Hand(c) for c in cards]
-    bids = [int(b) for b in bids]
+def optimise(hand):
+    if not 'J' in hand:
+        return hand
+    original_hand = hand
+    best_hand = hand
+    for c in 'AKQT98765432':
+        new_hand_string = original_hand.hand.replace('J', c)
+        new_hand = Hand(new_hand_string)
+        if new_hand > hand:
+            best_hand = new_hand
+            hand = best_hand
 
-ranked_cards = sorted(zip(cards, bids), key = lambda x: x[0])
+    original_hand.total_rank = (best_hand.total_rank[0], *original_hand.total_rank[1:])
+    return original_hand
 
-print(sum([pos * bid for (pos, (_, bid)) in enumerate(ranked_cards, start = 1)]))
+def read_cards_and_bids(infile):
+    with open(infile) as fl:
+        cards, bids = zip(*[line.strip().split() for line in fl])
+        cards = [Hand(c) for c in cards]
+        bids = [int(b) for b in bids]
+    return cards, bids
+
+def part1(infile):
+    cards, bids = read_cards_and_bids(infile)
+    ranked_cards = sorted(zip(cards, bids), key = lambda x: x[0])
+    return sum([pos * bid for (pos, (_, bid)) in enumerate(ranked_cards, start = 1)])
+
+def part2(infile):
+    faces['J'] = 1
+    cards, bids = read_cards_and_bids(infile)
+    cards = [optimise(card) for card in cards]
+    ranked_cards = sorted(zip(cards, bids), key = lambda x: x[0])
+    return sum([pos * bid for (pos, (_, bid)) in enumerate(ranked_cards, start = 1)])
+
+def main():
+    try:
+        infile = sys.argv[1]
+        print(part1(infile))
+        print(part2(infile))
+        return 0
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return 1
+
+if __name__ == '__main__':
+    sys.exit(main())
