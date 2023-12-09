@@ -26,10 +26,20 @@ def next_value(seq, val = 0):
 def line_to_sequence(line):
     return [int(x) for x in line.strip().split()]
 
+def reverse(lst):
+    lst.reverse()
+    return lst
+
 def part1(infile):
     with open(infile) as fl:
         values = [next_value(line_to_sequence(line)) for line in fl]
     return sum(values)
+
+def part2(infile):
+    with open(infile) as fl:
+        values = [next_value(reverse(line_to_sequence(line))) for line in fl]
+    return sum(values)
+
 
 def main():
     args = parse_args()
@@ -38,6 +48,8 @@ def main():
         raise PathError(f"Would you believe it, the path {infile} does not exist!")
     part1_result = part1(infile)
     print(f"The answer to part 1 is {part1_result}")
+    part2_result = part2(infile)
+    print(f"The answer to part 2 is {part2_result}")
 
 if __name__ == '__main__':
     main()
