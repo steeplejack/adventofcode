@@ -37,13 +37,17 @@
     (sum-sequence (with-open-file (stream "/Users/kg8/code/aoc/2023/day9/input.txt" :direction :input)
         (loop for line = (read-line stream nil)
             while line
-            collect (next-val (map 'list #'parse-integer (split-sequence:split-sequence #\Space line)))))))
+            collect (next-val
+                (map 'list #'parse-integer
+                    (split-sequence:split-sequence #\Space line)))))))
 
 (defvar part2 
     (sum-sequence (with-open-file (stream "/Users/kg8/code/aoc/2023/day9/input.txt" :direction :input)
-    (loop for line = (read-line stream nil)
-        while line
-        collect (prev-val (map 'list #'parse-integer (split-sequence:split-sequence #\Space line)))))))
+        (loop for line = (read-line stream nil)
+            while line
+            collect (prev-val
+                (map 'list #'parse-integer
+                    (split-sequence:split-sequence #\Space line)))))))
 
 
 (format t "Part 1: ~A~%" part1)
