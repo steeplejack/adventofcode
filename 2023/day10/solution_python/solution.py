@@ -1,6 +1,7 @@
 import queue
 from typing import List, Tuple
 
+# Hello, code from 2022 day 12
 def bfs_sp(graph, start, end) -> List[Tuple[int,int]]:
     if start == end:
         return [start]
@@ -126,6 +127,8 @@ for row in grid:
         if startpos in col.neighbours:
             startnode.neighbours.append(col.coord)
 
+# Work out what character the start node must have,
+# based on its connections
 x = []
 for nb in startnode.neighbours:
     x.append((nb[0]-startpos[0], nb[1] - startpos[1]))
@@ -159,6 +162,7 @@ furthest_node = max(paths, key = lambda x: len(paths[x]))
 longest_path = paths[furthest_node]
 print(f"Furthest distance found at point {furthest_node} at {len(longest_path) - 1} steps")
 
+# Wipe any non-circuit pipes - replace them with '.'
 for row in grid:
     for col in row:
         if not col.coord in seen:
@@ -166,6 +170,9 @@ for row in grid:
 
 
 def grid_to_string(grid):
+    """
+    For debugging - prints the grid of nodes
+    """
     p = []
     for row in grid:
         s=[]
@@ -176,6 +183,18 @@ def grid_to_string(grid):
 
 # print(grid_to_string(grid))
 
+# My solution to part 2 is in part2.py
+# What follows here is a better solution I found
+# on reddit that uses Jordan curve theory (or something,
+# I don't know anything about that).
+# It involves casting rays through the shape and
+# counting how many times they cross vertical pipe symbols.
+# Any grid square encountered after an odd number of crossings
+# is inside the shape.
+# You have to pick only two corner pieces to count as vertical
+# pipes for the crossings. I used '7' and 'F' (not 'J' and 'L').
+# I don't know the reason for this, but it works. Like I said,
+# this isn't my method, only my version of it.
 js = []
 for row in grid:
     io = 0
@@ -190,6 +209,7 @@ for row in grid:
             io += 1
     js.append(''.join(j))
 
+# Count how many squares are marked 'I' for 'Inside'
 count = 0
 for j in js:
     count += j.count('I')
