@@ -1,6 +1,7 @@
 import queue
 from typing import List, Tuple
 
+# Hello, code from 2022, day 12
 def bfs_sp(graph, start, end) -> List[Tuple[int,int]]:
     if start == end:
         return [start]
@@ -54,30 +55,6 @@ def bfs_all_paths(graph, start):
 
     return paths, seen
 
-def dijkstra(graph, source, sink = None):
-    dist = {source: 0}
-    prev = {}
-    q = queue.PriorityQueue()
-    q.put((dist[source], source))
-
-    for node in graph:
-        if node != source:
-            dist[node] = sys.maxsize
-            prev[node] = None
-
-    while not q.empty():
-        _, u = q.get()
-        if sink and sink == u:
-            return dist, prev
-        for v in graph[u]:
-            d = dist[u] + 1 # All distances are 1 in the graphs we are considering
-            if d < dist[v]:
-                dist[v] = d
-                prev[v] = u
-                q.put((dist[v], v))
-
-    return dist, prev
-
 
 class Node:
     def __init__(self, row, col, text):
@@ -116,6 +93,10 @@ class Node:
         self.neighbours = [nb for nb in self.neighbours
                            if (0 <= nb[0] < row_length) and (0 <= nb[1] < col_length)]
 
+# So, I was busy writing a presentation, and
+# I made no effort to tidy up this code.
+# Cue plain scripting and repeatedly
+# looping over the data.
 grid = []
 nrows = 0
 ncols = 0
@@ -124,7 +105,12 @@ startnode = None
 with open('../input.txt') as fl:
     array = [line.strip() for line in fl.readlines()]
 
-# Modify the input
+# Modify the input: double the resolution of the graph
+# by interspersing blank rows and columns. Original
+# graph entries can be identified later because they'll
+# have odd row and col indices.
+# Interspersing adds blank rows at the start and end of
+# the data, which I can rely on to be "outside" the graph
 new_array = []
 dummy_row = ' ' * len(array[0])
 for line in array:
@@ -142,6 +128,9 @@ def intersperse(row):
 
 array = [intersperse(row) for row in new_array]
 
+# these modifications are to reconnect pipes
+# that have been interrupted by the new blank
+# rows and columns
 for i in range(len(array)):
     for j in range(len(array[0])):
         if array[i][j] == ' ':
@@ -206,6 +195,8 @@ for row in grid:
 
 paths, seen = bfs_all_paths(graph, startpos)
 
+# Delete any pipes that are not in the main circuit
+# by changing them to a blank character
 for i in range(nrows):
     for j in range(ncols):
         if not (i, j) in seen:
@@ -226,6 +217,8 @@ def grid_to_string(grid):
 
 # print(grid_to_string(grid))
 
+# Connect empty ('.' | ' ') cells together so
+# I can do a flood-fill of all "outside" cells
 for i in range(nrows):
     for j in range(ncols):
         if grid[i][j].text in '. ':
@@ -241,12 +234,17 @@ for i in range(nrows):
                         if i == ii or j == jj:
                             graph[(i, j)].append((ii, jj))
 
+# Flood-fill
 _, outside = bfs_all_paths(graph, (0, 0))
 
+# Anything that is not part of the "outside" or 
+# main circuit connected components must be "inside"
+# Count only the original cells (odd-indices)
 count = 0
 for i in range(nrows):
     for j in range(ncols):
         if i % 2 == 1 and j % 2 == 1:
             if (i, j) not in outside and (i, j) not in seen:
                 count += 1
+# This is the answer!
 print(count)
