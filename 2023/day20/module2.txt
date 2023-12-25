@@ -1,0 +1,16 @@
+%hr -> zq
+%lp -> dm
+%nf -> lp, kb
+&sq -> rx
+%zq -> kb, fl
+%gj -> pq
+%pq -> kb, nf
+%dm -> kb, hr
+%ds -> kb
+&kk -> sq
+%fl -> zl, kb
+&kb -> kk, gj, gt, hr, lp
+%zl -> kb, ds
+%nc -> gj, kb
+broadcaster -> gt
+%gt -> nc, kb

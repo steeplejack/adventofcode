@@ -1,0 +1,16 @@
+%df -> dn, hf
+&sq -> rx
+%jx -> jh
+&dn -> kg, vt, tg, fs, pn, jx
+%ln -> dn, fs
+%fs -> df
+%tg -> tv
+&vt -> sq
+%tv -> dn, pn
+%pn -> pf
+%rn -> dn
+%jh -> dn, ln
+%pf -> dn, jx
+%kg -> tg, dn
+%hf -> dn, rn
+broadcaster -> kg

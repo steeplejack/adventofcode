@@ -38,9 +38,8 @@ class CircuitManager:
 
     def create_backlinks(self):
         for dest, source in self.hookups:
-            if dest not in self.modules:
-                print(dest)
-                module = Module(dest)
+            if dest == "rx":
+                module = Rx()
                 self.modules[module.name] = module
             self.modules[dest].add_input_module(source)
 
@@ -108,7 +107,14 @@ class Module:
                 for destination in self.destinations]
 
 class Rx(Module):
-    pass
+    def __init__(self):
+        super().__init__("rx")
+        self.low_pulse_received = False
+
+    def receive(self, from_: str, pulse: Pulse):
+        self.inputs[from_] = pulse
+        if pulse == Pulse.LOW:
+            self.low_pulse_received = True
 
 class Button(Module):
     def __init__(self):

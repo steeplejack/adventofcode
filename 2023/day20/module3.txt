@@ -1,0 +1,16 @@
+%gd -> vm, gr
+%jt -> vm, lz
+%dl -> nn
+&sq -> rx
+%vb -> vm, lg
+%fk -> fz
+%fz -> vm, jt
+%zc -> vm
+&vm -> dl, fk, nn, fv, gd, lg
+%gr -> vb, vm
+%lz -> vm, zc
+%nn -> fk
+%lg -> pv
+broadcaster -> gd
+%pv -> dl, vm
+&fv -> sq

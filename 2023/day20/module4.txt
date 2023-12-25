@@ -1,0 +1,16 @@
+%bc -> ph
+%sn -> sj
+%lf -> sn, vk
+%xf -> vk
+&sq -> rx
+&vk -> bc, sj, jd, lf, xr, sn
+%jd -> pp
+%sb -> gf, vk
+%pp -> vk, bc
+%sj -> kq
+%kq -> sb, vk
+%ph -> md, vk
+%gf -> jd, vk
+broadcaster -> lf
+%md -> vk, xf
+&xr -> sq
